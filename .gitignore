@@ -1,0 +1,8 @@
+# ignore obj dir
+obj/
+#ignore bin dir
+bin/
+#ignore C::B proj files
+Minesweeper.cbp
+Minesweeper.depend
+Minesweeper.layout
