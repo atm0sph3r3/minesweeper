@@ -1,9 +1,11 @@
 #include <iostream>
+#include "Board.h"
 
 using namespace std;
 
 int main()
 {
-    cout << "Hello world!" << endl;
+    Board newBoard;
+    newBoard.initializeBoard();
     return 0;
 }
