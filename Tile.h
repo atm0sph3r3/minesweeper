@@ -11,7 +11,11 @@ class Tile {
         /**
          * Enum describing types of Tiles
          */
-        enum tileType {NO_MINE, MINE, USED};
+        enum tileType {NO_MINE, MINE};
+        /**
+         * Enum describing status of Tile
+         */
+        enum tileStatus{UNPLAYED,PLAYED};
         /**
          * Default constructor
          */
@@ -21,7 +25,7 @@ class Tile {
          * @param tileType
          * @param numBombs
          */
-        Tile(tileType type, int numBombs = 0);
+        Tile(tileType type, int numBombs = 0, int row=0, int column=0);
         /**
          * Destructor
          */
@@ -30,7 +34,7 @@ class Tile {
          * Return Tile type
          * @return type
          */
-        tileType getTileType() { return type; }
+        tileType getTileType() const { return type; }
         /**
          * Sets a type for Tile
          * @param tileType
@@ -40,23 +44,41 @@ class Tile {
          * Returns the number of MINEs surrounding a Tile
          * @return numMines
          */
-        int getNumMines() { return numMines; }
+        int getNumMines() const { return numMines; }
         /**
          * Add number of mines to a Tile
          * Pre-condition: Tile is NO_MINE and number is positive
          * Post-condition: Changed number of mines associated with
          * a Tile
          */
-        void addMines(int number);
+        void addMine();
         /**
          * Check whether a Tile is of type MINE
          */
-        bool isMine();
+        bool isMine() const;
+        /**
+         * Return row number
+         */
+        int getRow() const { return row; }
+        /**
+         * Return column number
+         */
+        int getColumn() const { return column; }
+        /*
+         * Test if Tile type is DONE
+         */
+        bool isUnplayed() const;
     private:
         //Type of Tile using enum tileType
         tileType type;
         //Number of mines surrounding a NO_MINE tile
         int numMines;
+        //Row number
+        int row;
+        //Column number
+        int column;
+        //Tile status
+        tileStatus status;
 
 };
 

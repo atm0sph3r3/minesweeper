@@ -7,5 +7,6 @@ int main()
 {
     Board newBoard;
     newBoard.initializeBoard();
+    newBoard.drawBoard();
     return 0;
 }
