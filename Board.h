@@ -27,11 +27,23 @@ class Board
         /**
          * Return gameBoard
          */
-        std::vector<std::vector<Tile> > getGameboard() const { return gameBoard; }
+        std::vector<std::vector<Tile> >& getGameboard() { return gameBoard; }
         /*
          * Draw current state of board
          */
         void drawBoard() const;
+        /*
+         * Return current game status
+         */
+        bool getGameStatus() const;
+        /*
+         * Print status of current game
+         */
+        void printGameStatus() const;
+        /**
+         * Reveal tiles
+         */
+        void revealTiles(Tile& chosenTile);
     private:
         //Size of board (size x size). Currently fixed at 8x8
         int size;
@@ -49,6 +61,12 @@ class Board
          * Set numMines in NO_MINE Tiles
          */
         void setNumMines();
+        //Status of game
+        bool isDone;
+        /**
+         * Helper function for revealTiles
+         */
+        void setTileStatus(Tile& tile);
 };
 
 #endif // BOARD_H

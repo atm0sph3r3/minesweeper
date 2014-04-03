@@ -8,7 +8,7 @@
 using namespace std;
 
 //Temporarily set size and numMines
-Board::Board() : size(8), totalNumMines(8){
+Board::Board() : size(8), totalNumMines(8), isDone(false){
     //allocate memory for enough rows
     gameBoard.resize(size);
 }
@@ -90,13 +90,17 @@ void Board::setNumMines(){
 			//Tile in lower left corner and immediate left
 			if(column -1 >= 0){
 				gameBoard[row+1][column-1].addMine();
-				gameBoard[row][column-1].addMine();
 			}
 			//Tile in lower right corner and immediate right
 			if(column + 1 < size){
 				gameBoard[row+1][column+1].addMine();
-				gameBoard[row][column+1].addMine();
 			}
+		}
+		if(column + 1 < size){
+			gameBoard[row][column+1].addMine();
+		}
+		if(column - 1 >= 0){
+			gameBoard[row][column-1].addMine();
 		}
 	}
 }
@@ -122,9 +126,12 @@ void Board::drawBoard()const{
 		//Print key for rows
 		cout << i << " | ";
 		for(int j = 0; j < size; j++){
-			if(gameBoard.at(i).at(j).isUnplayed()){
-				cout << " O ";
-			} else {
+			if(gameBoard.at(i).at(j).getStatus() == Tile::UNPLAYED){
+				cout << " U ";
+			} else if((gameBoard.at(i).at(j)).getStatus() == Tile::SHOW_NUM){
+				cout << " " << gameBoard.at(i).at(j).getNumMines() << " ";
+			}
+			else {
 				cout << " X ";
 			}
 		}
@@ -132,3 +139,93 @@ void Board::drawBoard()const{
 	}
 }
 
+void Board::revealTiles(Tile& chosenTile){
+	int row = chosenTile.getRow();
+	int column = chosenTile.getColumn();
+	Tile tile;
+
+	if(!chosenTile.isMine()){
+		if(chosenTile.getNumMines() == 0){
+			chosenTile.setStatus(Tile::PLAYED);
+			//Check Tiles above Tile played
+			if(row - 1 >= 0){
+				//Tile immediately above
+				if(!gameBoard[row-1][column].isMine()){
+					setTileStatus(gameBoard[row-1][column]);
+				}
+				//Tile in upper left corner
+				if(column -1 >= 0){
+					if(!gameBoard[row-1][column-1].isMine()){
+						setTileStatus(gameBoard[row-1][column-1]);
+					}
+				}
+				//Tile in upper right corner
+				if(column + 1 < size){
+					if(!gameBoard[row-1][column+1].isMine()){
+						setTileStatus(gameBoard[row-1][column+1]);
+					}
+				}
+			}
+			//Check Tiles below MINE
+			if(row + 1 < size){
+				//Tile immediately above
+				if(!gameBoard[row+1][column].isMine()){
+					setTileStatus(gameBoard[row+1][column]);
+				}
+				//Tile in lower left corner and immediate left
+				if(column -1 >= 0){
+					if(gameBoard[row+1][column-1].isMine()){
+						setTileStatus(gameBoard[row+1][column-1]);
+					}
+				}
+				//Tile in lower right corner and immediate right
+				if(column + 1 < size){
+					if(!gameBoard[row+1][column+1].isMine()){
+						setTileStatus(gameBoard[row+1][column+1]);
+					}
+				}
+			}
+
+			if(column + 1 < size){
+				if(!gameBoard[row][column+1].isMine()){
+					setTileStatus(gameBoard[row][column+1]);
+				}
+			}
+
+			if(column - 1 >= 0){
+				if(!gameBoard[row][column-1].isMine()){
+					setTileStatus(gameBoard[row][column-1]);
+				}
+			}
+		} else {
+			chosenTile.setStatus(Tile::SHOW_NUM);
+		}
+	} else {
+		//Game over
+		this->isDone = true;
+	}
+}
+
+//Helper function for revealTiles
+void Board::setTileStatus(Tile& tile){
+	if(tile.getNumMines() == 0){
+		tile.setStatus(Tile::PLAYED);
+		revealTiles(tile);
+	} else {
+		tile.setStatus(Tile::SHOW_NUM);
+	}
+}
+
+//Get game status
+bool Board::getGameStatus() const {
+	return isDone;
+}
+
+//Print current status of game
+void Board::printGameStatus() const {
+	if(!isDone){
+		cout << "Choose a tile based on the grid" << endl;
+	} else {
+		cout << "Game over. Try again." << endl;
+	}
+}

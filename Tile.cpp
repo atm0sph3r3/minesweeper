@@ -6,7 +6,7 @@
  *Additional constructor accepting number of mines surrounding a
  *tile as well as the Tile type.
 */
-Tile::Tile():type(NO_MINE), numMines(0), row(0), column(0){
+Tile::Tile():type(NO_MINE), numMines(0), row(0), column(0), status(UNPLAYED){
     //intentionally blank
 }
 //Destructor
@@ -33,10 +33,7 @@ bool Tile::isMine() const {
 	return false;
 }
 
-//Returns true if Tile is type DONE
-bool Tile::isUnplayed() const{
-	if(status == UNPLAYED){
-		return true;
-	}
-	return false;
+//Set the status of a Tile
+void Tile::setStatus(tileStatus status){
+	this->status = status;
 }

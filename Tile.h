@@ -15,7 +15,7 @@ class Tile {
         /**
          * Enum describing status of Tile
          */
-        enum tileStatus{UNPLAYED,PLAYED};
+        enum tileStatus{UNPLAYED,PLAYED, SHOW_NUM};
         /**
          * Default constructor
          */
@@ -64,10 +64,14 @@ class Tile {
          * Return column number
          */
         int getColumn() const { return column; }
-        /*
-         * Test if Tile type is DONE
+        /**
+         * Set the status of the Tile
          */
-        bool isUnplayed() const;
+        void setStatus(tileStatus status);
+        /*
+         * Get the status of the tile
+         */
+        tileStatus getStatus() const { return status; }
     private:
         //Type of Tile using enum tileType
         tileType type;
