@@ -7,66 +7,73 @@
 class Board
 {
     public:
-		/**
-		 * Constructor.
-		 * @param size size of board
-		 */
-        Board();
-        /**
-         * Destructor
-         */
+		//Default ctor
+		Board();
+		//Ctor
+        Board(int sizeOfBoard, int numberOfMines);
+        //Dtor
         virtual ~Board();
-        /**
-         * Add Tiles to board and set tileType
+        /*
+         * @brief Public function to add Tiles and set their attributes
          */
         void initializeBoard();
-        /**
-         * Return vector of pointers to mine locations
+        /*
+         * @briefReturn vector of pointers to Tiles of type MINE
          */
         std::vector<Tile*> getMineLocations() const { return mineLocations; }
-        /**
-         * Return gameBoard
+        /*
+         * @brief Return reference to gameBoard
          */
         std::vector<std::vector<Tile> >& getGameboard() { return gameBoard; }
         /*
-         * Draw current state of board
+         * @brief Draw current state of board
          */
         void drawBoard() const;
         /*
-         * Return current game status
+         * @brief Return current game status
          */
-        bool getGameStatus() const;
+        bool getGameStatus() const { return isDone; }
         /*
-         * Print status of current game
+         * @brief Print directive to user, if applicable.
          */
         void printGameStatus() const;
         /**
-         * Reveal tiles
+         * @brief Recursively check Tile types
+         * @param row user selected Tile row
+         * @param column user selected Tile column
          */
-        void revealTiles(Tile& chosenTile);
+        void revealTiles(int row, int column);
+
+        /*
+         * @brief Determine whether there are any available moves left
+         *
+         */
+        void checkEnd();
+        /*
+         * @brief Return whether or not the user won
+         */
+        bool getDidWin() const { return didWin; }
     private:
-        //Size of board (size x size). Currently fixed at 8x8
+        //Size of board (size x size)
         int size;
-        //Number of MINES on board. Currently fixed at 8
+        //Number of MINES on board.
         int totalNumMines;
         //A 2D vector containing a collection of Tiles
         std::vector<std::vector<Tile> > gameBoard;
         //Vector of MINE locations
         std::vector<Tile*> mineLocations;
         /**
-         * Set mines
+         * Add mines to the Board
          */
         void addMines();
         /**
-         * Set numMines in NO_MINE Tiles
+         * Set the number of mines surrounding Tiles of type NO_MINE
          */
         void setNumMines();
-        //Status of game
+        //Status of game. True = game over
         bool isDone;
-        /**
-         * Helper function for revealTiles
-         */
-        void setTileStatus(Tile& tile);
+        //Whether or not the user won
+        bool didWin;
 };
 
 #endif // BOARD_H

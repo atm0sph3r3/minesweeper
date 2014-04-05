@@ -7,16 +7,23 @@
 
 using namespace std;
 
-//Temporarily set size and numMines
-Board::Board() : size(8), totalNumMines(8), isDone(false){
+//Default ctor
+Board::Board():size(0),totalNumMines(0),isDone(false), didWin(false){
+	//no code
+}
+
+//Ctor accepting number ints for size of board, number of mines, and set isDone to false
+Board::Board(int size, int numMines) : size(size), totalNumMines(numMines), isDone(false), didWin(false){
     //allocate memory for enough rows
     gameBoard.resize(size);
 }
 
+//Dtor
 Board::~Board(){
 	//intentionally blank
 }
 
+//Set up Board
 void Board::initializeBoard(){
 	//Initially set all Tiles as NO_MINE
     for(int i = 0; i < size; i++){
@@ -30,6 +37,7 @@ void Board::initializeBoard(){
     setNumMines();
 }
 
+//Add mines to Board
 void Board::addMines(){
 	int row,column;
 
@@ -63,6 +71,7 @@ void Board::addMines(){
     }
 }
 
+//Set numMines for Tiles of type NO_MINE
 void Board::setNumMines(){
 	int row,column;
 
@@ -107,6 +116,8 @@ void Board::setNumMines(){
 
 //Draws current status of Board
 void Board::drawBoard()const{
+	Tile tile;
+
 	cout << "    ";
 	//Draw key for columns
 	for(int i = 0; i < size; i++){
@@ -121,111 +132,112 @@ void Board::drawBoard()const{
 	}
 	cout << endl;
 
-	//Print out " O " for an UNPLAYED space, " X " for a PLAYED space
+	//Print out "| |" for an UNPLAYED space, " X " for a PLAYED space
 	for(int i = 0; i < size; i++){
 		//Print key for rows
 		cout << i << " | ";
 		for(int j = 0; j < size; j++){
-			if(gameBoard.at(i).at(j).getStatus() == Tile::UNPLAYED){
-				cout << " U ";
-			} else if((gameBoard.at(i).at(j)).getStatus() == Tile::SHOW_NUM){
-				cout << " " << gameBoard.at(i).at(j).getNumMines() << " ";
-			}
-			else {
+			tile = (gameBoard.at(i)).at(j);
+			if(tile.getStatus() == Tile::UNPLAYED){
 				cout << " X ";
+			} else if(tile.getStatus() == Tile::PLAYED && tile.getTileType() != Tile::MINE){
+				cout << " 0 ";
+			} else if(tile.getStatus() == Tile::SHOW_NUM){
+				cout << " " << tile.getNumMines() << " ";
+			} else {
+				cout << " M ";
 			}
 		}
 		cout << endl;
 	}
 }
 
-void Board::revealTiles(Tile& chosenTile){
-	int row = chosenTile.getRow();
-	int column = chosenTile.getColumn();
-	Tile tile;
+//Recursively check Tiles
+void Board::revealTiles(int row, int column){
+	//Be sure that a legitimate Tile is chosen
+	if(row < size && column < size){
+		//Tile must not be a mine. If so, game ends.
+		if(gameBoard[row][column].getTileType() != Tile::MINE){
+			//If Tile hasn't already been played either directly or indirectly
+			if(gameBoard[row][column].getStatus() == Tile::UNPLAYED){
+				//Tile has no mines surrounding it. Check Tiles surrounding it.
+				//Else set it's status as SHOW_NUM so number of mines surrounding it will be displayed
+				if(gameBoard[row][column].getNumMines() == 0){
+					//Mark Tile as played
+					gameBoard[row][column].setStatus(Tile::PLAYED);
+					//Check Tiles above Tile played
+					if(row - 1 >= 0){
+						//Tile immediately above
+						revealTiles(row-1,column);
+						//Tile in upper left corner
+						if(column -1 >= 0){
+							revealTiles(row-1,column-1);
+						}
+						//Tile in upper right corner
+						if(column + 1 < size){
+							revealTiles(row-1,column+1);
+						}
+					} //if row above check
+					//Check Tiles below MINE
+					if(row + 1 < size){
+						//Tile immediately above
+						revealTiles(row+1,column);
+						//Tile in lower left corner and immediate left
+						if(column -1 >= 0){
+							revealTiles(row+1,column-1);
+						}
+						//Tile in lower right corner and immediate right
+						if(column + 1 < size){
+							revealTiles(row+1,column+1);
+						}
+					} //if row below check
 
-	if(!chosenTile.isMine()){
-		if(chosenTile.getNumMines() == 0){
-			chosenTile.setStatus(Tile::PLAYED);
-			//Check Tiles above Tile played
-			if(row - 1 >= 0){
-				//Tile immediately above
-				if(!gameBoard[row-1][column].isMine()){
-					setTileStatus(gameBoard[row-1][column]);
-				}
-				//Tile in upper left corner
-				if(column -1 >= 0){
-					if(!gameBoard[row-1][column-1].isMine()){
-						setTileStatus(gameBoard[row-1][column-1]);
-					}
-				}
-				//Tile in upper right corner
-				if(column + 1 < size){
-					if(!gameBoard[row-1][column+1].isMine()){
-						setTileStatus(gameBoard[row-1][column+1]);
-					}
-				}
-			}
-			//Check Tiles below MINE
-			if(row + 1 < size){
-				//Tile immediately above
-				if(!gameBoard[row+1][column].isMine()){
-					setTileStatus(gameBoard[row+1][column]);
-				}
-				//Tile in lower left corner and immediate left
-				if(column -1 >= 0){
-					if(gameBoard[row+1][column-1].isMine()){
-						setTileStatus(gameBoard[row+1][column-1]);
-					}
-				}
-				//Tile in lower right corner and immediate right
-				if(column + 1 < size){
-					if(!gameBoard[row+1][column+1].isMine()){
-						setTileStatus(gameBoard[row+1][column+1]);
-					}
-				}
-			}
+					//Tile immediately to the right of the chosen Tile
+					if(column + 1 < size){
+						revealTiles(row,column+1);
+					}//if
 
-			if(column + 1 < size){
-				if(!gameBoard[row][column+1].isMine()){
-					setTileStatus(gameBoard[row][column+1]);
+					//Tile immediately to the left of the chosen Tile
+					if(column - 1 >= 0){
+						revealTiles(row,column-1);
+					}//if
+				} else {
+					(gameBoard.at(row)).at(column).setStatus(Tile::SHOW_NUM);
 				}
-			}
-
-			if(column - 1 >= 0){
-				if(!gameBoard[row][column-1].isMine()){
-					setTileStatus(gameBoard[row][column-1]);
-				}
-			}
+			}//if already played
 		} else {
-			chosenTile.setStatus(Tile::SHOW_NUM);
+			(gameBoard.at(row)).at(column).setStatus(Tile::PLAYED);
+			//Game over
+			isDone = true;
 		}
-	} else {
-		//Game over
-		this->isDone = true;
-	}
-}
-
-//Helper function for revealTiles
-void Board::setTileStatus(Tile& tile){
-	if(tile.getNumMines() == 0){
-		tile.setStatus(Tile::PLAYED);
-		revealTiles(tile);
-	} else {
-		tile.setStatus(Tile::SHOW_NUM);
-	}
-}
-
-//Get game status
-bool Board::getGameStatus() const {
-	return isDone;
+	}//if size check
 }
 
 //Print current status of game
 void Board::printGameStatus() const {
 	if(!isDone){
-		cout << "Choose a tile based on the grid" << endl;
+		cout << "Choose a tile ([row] [column]) based on the grid" << endl;
 	} else {
 		cout << "Game over. Try again." << endl;
 	}
+}
+
+//Check whether there are any available moves left
+void Board::checkEnd() {
+	int movesLeft = 0;
+
+	//Check the number of UNPLAYED Tiles remaining
+	for(int i = 0; i < size; i++){
+		for(int j = 0; j < size; j++){
+			if(gameBoard.at(i).at(j).getStatus() == Tile::UNPLAYED){
+				++movesLeft;
+			}
+		}
+	}
+
+	if(movesLeft == totalNumMines){
+		isDone = true;
+		didWin = true;
+	}
+
 }

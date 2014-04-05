@@ -8,68 +8,68 @@
 
 class Tile {
     public:
-        /**
-         * Enum describing types of Tiles
+        /*
+         * @brief Enum describing types of Tiles
          */
         enum tileType {NO_MINE, MINE};
         /**
-         * Enum describing status of Tile
+         * @brief Enum describing status of Tile
          */
         enum tileStatus{UNPLAYED,PLAYED, SHOW_NUM};
-        /**
-         * Default constructor
+        /*
+         * @brief Default ctor
          */
         Tile();
-        /**
-         * Constructor
+        /*
+         * @brief Optional ctor
          * @param tileType
          * @param numBombs
          */
         Tile(tileType type, int numBombs = 0, int row=0, int column=0);
-        /**
-         * Destructor
+        /*
+         * @brief Destructor
          */
         virtual ~Tile();
-        /**
-         * Return Tile type
+        /*
+         * @brief Return Tile type
          * @return type
          */
         tileType getTileType() const { return type; }
-        /**
-         * Sets a type for Tile
+        /*
+         * @brief Sets a type for Tile
          * @param tileType
          */
         void setTileTypeTile(tileType type) { this->type = type; }
-        /**
-         * Returns the number of MINEs surrounding a Tile
+        /*
+         * @brief Returns the number of MINEs surrounding a Tile
          * @return numMines
          */
         int getNumMines() const { return numMines; }
-        /**
-         * Add number of mines to a Tile
+        /*
+         * @brief Add number of mines to a Tile
          * Pre-condition: Tile is NO_MINE and number is positive
          * Post-condition: Changed number of mines associated with
          * a Tile
          */
         void addMine();
-        /**
-         * Check whether a Tile is of type MINE
+        /*
+         * @brief Check whether a Tile is of type MINE
          */
         bool isMine() const;
-        /**
-         * Return row number
+        /*
+         * @brief Return row number
          */
         int getRow() const { return row; }
-        /**
-         * Return column number
+        /*
+         * @brief Return column number
          */
         int getColumn() const { return column; }
-        /**
-         * Set the status of the Tile
+        /*
+         * @brief Set the status of the Tile
          */
         void setStatus(tileStatus status);
         /*
-         * Get the status of the tile
+         * @brief Get the status of the tile
          */
         tileStatus getStatus() const { return status; }
     private:
